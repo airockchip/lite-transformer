@@ -57,6 +57,7 @@ def main(args):
             model.half()
         if use_cuda:
             model.cuda()
+        model.eval()
         print(model, file=sys.stderr)
         print(args.path, file=sys.stderr)
 

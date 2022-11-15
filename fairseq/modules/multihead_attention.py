@@ -194,17 +194,19 @@ class MultiheadAttention(nn.Module):
                     v = prev_value
                 else:
                     v = torch.cat((prev_value, v), dim=1)
-            key_padding_mask = self._append_prev_key_padding_mask(
-                key_padding_mask=key_padding_mask,
-                prev_key_padding_mask=saved_state.get('prev_key_padding_mask', None),
-                batch_size=bsz,
-                src_len=k.size(1),
-                static_kv=static_kv,
-            )
+                    
+            if not self.onnx_trace:
+                key_padding_mask = self._append_prev_key_padding_mask(
+                    key_padding_mask=key_padding_mask,
+                    prev_key_padding_mask=saved_state.get('prev_key_padding_mask', None),
+                    batch_size=bsz,
+                    src_len=k.size(1),
+                    static_kv=static_kv,
+                )
+                saved_state['prev_key_padding_mask'] = key_padding_mask
 
             saved_state['prev_key'] = k.view(bsz, self.num_heads, -1, self.head_dim)
-            saved_state['prev_value'] = v.view(bsz, self.num_heads, -1, self.head_dim)
-            saved_state['prev_key_padding_mask'] = key_padding_mask
+            saved_state['prev_value'] = v.view(bsz, self.num_heads, -1, self.head_dim)            
 
             self._set_input_buffer(incremental_state, saved_state)
 
@@ -241,13 +243,17 @@ class MultiheadAttention(nn.Module):
             attn_weights += attn_mask
 
         if key_padding_mask is not None:
-            # don't attend to padding symbols
-            attn_weights = attn_weights.view(bsz, self.num_heads, tgt_len, src_len)
-            attn_weights = attn_weights.masked_fill(
-                key_padding_mask.unsqueeze(1).unsqueeze(2),
-                float('-inf'),
-            )
-            attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+            # # don't attend to padding symbols
+            if not self.onnx_trace:
+                attn_weights = attn_weights.view(bsz, self.num_heads, tgt_len, src_len)
+                attn_weights = attn_weights.masked_fill(
+                    key_padding_mask.unsqueeze(1).unsqueeze(2),
+                    -12,
+                )
+                attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+            else:
+                attn_weights = attn_weights * (1-key_padding_mask)
+                attn_weights = attn_weights + key_padding_mask * (-12)
 
         if before_softmax:
             return attn_weights, v

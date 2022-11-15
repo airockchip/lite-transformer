@@ -8,6 +8,9 @@
 }
 ```
 
+## Rockchip README
+[[README_RK.md](README_RK.md)]
+
 ## Overview
 We release the PyTorch code for the Lite Transformer. [[Paper](https://arxiv.org/abs/2004.11886)|[Website](https://hanlab.mit.edu/projects/litetransformer/)|[Slides](https://hanlab.mit.edu/projects/litetransformer/Presentation_LiteTransformer.pdf)]:
 ![overview](figures/overview.png?raw=true "overview")
@@ -31,7 +34,7 @@ We release the PyTorch code for the Lite Transformer. [[Paper](https://arxiv.org
 ### Installation
 
 1. Codebase
-    
+   
     To install fairseq from source and develop locally:
     ```bash
     pip install --editable .

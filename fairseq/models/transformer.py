@@ -716,7 +716,7 @@ class TransformerDecoderLayer(nn.Module):
                 key=encoder_out,
                 value=encoder_out,
                 key_padding_mask=encoder_padding_mask,
-                incremental_state=incremental_state,
+                incremental_state=incremental_state if not self.onnx_trace else None,
                 static_kv=True,
                 need_weights=(not self.training and self.need_attn),
             )
@@ -771,14 +771,14 @@ def base_architecture(args):
     args.encoder_embed_dim = getattr(args, 'encoder_embed_dim', 512)
     args.encoder_ffn_embed_dim = getattr(args, 'encoder_ffn_embed_dim', 2048)
     args.encoder_layers = getattr(args, 'encoder_layers', 6)
-    args.encoder_attention_heads = getattr(args, 'encoder_attention_heads', 8)
+    args.encoder_attention_heads = getattr(args, 'encoder_attention_heads', 4)
     args.encoder_normalize_before = getattr(args, 'encoder_normalize_before', False)
     args.encoder_learned_pos = getattr(args, 'encoder_learned_pos', False)
     args.decoder_embed_path = getattr(args, 'decoder_embed_path', None)
     args.decoder_embed_dim = getattr(args, 'decoder_embed_dim', args.encoder_embed_dim)
     args.decoder_ffn_embed_dim = getattr(args, 'decoder_ffn_embed_dim', args.encoder_ffn_embed_dim)
     args.decoder_layers = getattr(args, 'decoder_layers', 6)
-    args.decoder_attention_heads = getattr(args, 'decoder_attention_heads', 8)
+    args.decoder_attention_heads = getattr(args, 'decoder_attention_heads', 4)
     args.decoder_normalize_before = getattr(args, 'decoder_normalize_before', False)
     args.decoder_learned_pos = getattr(args, 'decoder_learned_pos', False)
     args.attention_dropout = getattr(args, 'attention_dropout', 0.)

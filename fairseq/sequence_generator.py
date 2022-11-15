@@ -523,8 +523,8 @@ class EnsembleModel(torch.nn.Module):
         super().__init__()
         self.models = torch.nn.ModuleList(models)
         self.incremental_states = None
-        if all(isinstance(m.decoder, FairseqIncrementalDecoder) for m in models):
-            self.incremental_states = {m: {} for m in models}
+        # if all(isinstance(m.decoder, FairseqIncrementalDecoder) for m in models):
+        #     self.incremental_states = {m: {} for m in models}
 
     def has_encoder(self):
         return hasattr(self.models[0], 'encoder')

@@ -1,0 +1,40 @@
+arch: transformer
+no-progress-bar: true
+
+share-all-embeddings: True
+log-interval: 100
+optimizer: adam
+adam-betas: (0.9, 0.98)
+clip-norm: 0.0
+weight-decay: 0.0001
+criterion: label_smoothed_cross_entropy
+label-smoothing: 0.1
+
+keep-last-epochs: 20
+ddp-backend: no_c10d
+max-tokens: 4096
+lr-scheduler: cosine
+max-update: 326300
+lr-shrink: 1
+max-lr: 0.0001
+lr: 1e-7
+min-lr: 1e-7
+t-mult: 1
+lr-period-updates: 326300
+
+dropout: 0.1
+attention-dropout: 0.08
+
+fp16: false
+
+
+
+encoder-embed-dim: 256
+encoder-ffn-embed-dim: 256
+encoder-layers: 5
+decoder-embed-dim: 256
+decoder-ffn-embed-dim: 256
+decoder-layers: 3
+encoder-attention-heads: 4
+decoder-attention-heads: 4
+
